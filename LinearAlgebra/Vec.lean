@@ -21,6 +21,8 @@ for the same reason.
 
 import Mathlib.Algebra.Group.Defs
 
+namespace LinearAlgebra
+
 /-- A vector of length `n` over `α`: a function sending each valid index
 `Fin n` to an entry of `α`. Because an `i : Fin n` carries a proof that `i < n`,
 indexing can never run off the end — there is simply no out-of-bounds case to
@@ -127,3 +129,5 @@ def v123 : Vec Nat 3 := fun i => i.val + 1
 #eval v123                 -- [1, 2, 3]
 #eval v123 + v123          -- [2, 4, 6]
 #eval (0 : Vec Nat 5)      -- [0, 0, 0, 0, 0]
+
+end LinearAlgebra

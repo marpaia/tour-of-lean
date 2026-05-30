@@ -58,6 +58,8 @@ import Mathlib.Analysis.InnerProductSpace.Basic
 -- enables the `⟪x, y⟫_𝕜` notation for the inner product
 open scoped InnerProductSpace
 
+namespace Analysis
+
 /-! We fix an arbitrary real inner-product space `F` for the whole file. Stating
 the constraints once with `variable` lets the theorem below inherit them
 automatically; Lean inserts only the binders a declaration actually mentions. -/
@@ -102,3 +104,5 @@ theorem pythagorean_theorem (u v : F) (h : ⟪u, v⟫_ℝ = 0) :
       /- With both cross terms gone, only the zeros remain to be cleared away,
          which is pure arithmetic and the job of `ring`. -/
     _ = ‖u‖ ^ 2 + ‖v‖ ^ 2 := by ring
+
+end Analysis
