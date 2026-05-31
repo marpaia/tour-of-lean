@@ -1,12 +1,13 @@
 /-
 # Bilinearity of the real inner product
 
-Every proof in this directory that expands a squared length — the Pythagorean
-theorem, the parallelogram law, Cauchy–Schwarz, the triangle inequality — runs
-on the same engine: the inner product is *bilinear*. This file is the one place
-that engine is laid out on its own, so the theorem files can name the laws and
-get on with their argument. It proves nothing new; it is a reference sheet for
-the algebra the expansions use.
+Every squared-length expansion in these libraries runs on the same engine: the
+inner product is *bilinear*. Cauchy–Schwarz, here beside this file in `Analysis`,
+and the Pythagorean theorem, the parallelogram law, and the triangle inequality
+over in `Geometry` all expand a `⟪w, w⟫` the same way. This file is the one place
+that engine is laid out on its own, so those proofs can name the laws and get on
+with their argument. It proves nothing new; it is a reference sheet for the
+algebra the expansions use.
 
 ## What bilinearity means
 
@@ -39,9 +40,9 @@ The scalar comes out once per slot, so it lands *squared*. This is exactly why
 the inner product behaves like a *product* of vectors — it distributes over
 addition and lets scalars through, just like `·` — and why `⟪w, w⟫`, with `w`
 filling both slots, expands to a **quadratic** the moment `w` is a combination
-of other vectors. Pushing a self inner product through these laws is how each
-theorem in this directory turns a statement about lengths into a polynomial that
-`ring` or `nlinarith` can finish.
+of other vectors. Pushing a self inner product through these laws is how each of
+those theorems turns a statement about lengths into a polynomial that `ring` or
+`nlinarith` can finish.
 
 ## How to read this file
 
@@ -55,8 +56,14 @@ files import Mathlib and call these lemmas directly, by these names.
 
 We fix an arbitrary real inner-product space `F`:
 
-  * `[NormedAddCommGroup F]` — vectors add, negate, and carry a norm `‖·‖`;
+  * `[SeminormedAddCommGroup F]` — vectors add, negate, and carry a *seminorm*
+    `‖·‖` (a length not required to be definite);
   * `[InnerProductSpace ℝ F]` — there is a real inner product `⟪·,·⟫_ℝ`.
+
+Bilinearity, symmetry, and the squared-norm bridge are all pure inner-product
+algebra — none of them touches definiteness — so this sheet, like the proofs it
+serves, lives over a *seminormed* group, the weakest setting `InnerProductSpace`
+requires (and the one Mathlib's own `Norm_Seminormed` section uses).
 -/
 
 import Mathlib.Analysis.InnerProductSpace.Basic
@@ -69,7 +76,7 @@ namespace Analysis.Bilinearity
 /-! We fix an arbitrary real inner-product space `F` for the whole file, exactly
 as the theorem files do, so the laws below are stated in the same setting they
 are used. -/
-variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+variable {F : Type*} [SeminormedAddCommGroup F] [InnerProductSpace ℝ F]
 
 /-! ### Additivity
 

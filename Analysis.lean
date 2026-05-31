@@ -1,5 +1,3 @@
 import Analysis.Bilinearity
-import Analysis.PythagoreanTheorem
-import Analysis.ParallelogramLaw
 import Analysis.CauchySchwarz
-import Analysis.TriangleInequality
+import Analysis.Convergence

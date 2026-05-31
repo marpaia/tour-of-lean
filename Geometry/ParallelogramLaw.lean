@@ -40,14 +40,20 @@ each other's cross terms for free.
 
 We work over an arbitrary type `F` carrying two pieces of structure:
 
-  * `[NormedAddCommGroup F]` — vectors can be added, negated, and measured:
-    we have `+`, `0`, unary `-`, and a norm `‖·‖`.
-  * `[InnerProductSpace ℝ F]` — there is a real inner product `⟪·,·⟫_ℝ`, tied
-    to the norm by `⟪x, x⟫_ℝ = ‖x‖²`.
+  * `[SeminormedAddCommGroup F]` — vectors can be added, negated, and measured by
+    a *seminorm* `‖·‖`: a length in every respect but one — it need not be
+    *definite*, so a nonzero vector may still have `‖x‖ = 0`.
+  * `[InnerProductSpace ℝ F]` — there is a real inner product `⟪·,·⟫_ℝ`, tied to
+    the seminorm by `⟪x, x⟫_ℝ = ‖x‖²`.
 
-These two hypotheses are everything the proof uses. Nothing below mentions a
-dimension or a coordinate, so the same theorem covers the plane, `ℝⁿ`, and
-infinite-dimensional spaces alike.
+A seminorm is the weakest structure the inner product itself requires —
+`InnerProductSpace` is declared over a seminormed group — and the calculation
+below never appeals to *definiteness* (`‖x‖ = 0 → x = 0`). Stating the law over a
+seminorm rather than the stronger `NormedAddCommGroup` is the same
+weakest-structure discipline `Analysis.Convergence` follows, and it is how
+Mathlib files this result (in its `Norm_Seminormed` section). Nothing below
+mentions a dimension or a coordinate either, so the same theorem covers the
+plane, `ℝⁿ`, and infinite-dimensional spaces alike.
 
 ## The argument
 
@@ -76,12 +82,12 @@ import Mathlib.Analysis.InnerProductSpace.Basic
 -- enables the `⟪x, y⟫_𝕜` notation for the inner product
 open scoped InnerProductSpace
 
-namespace Analysis
+namespace Geometry
 
 /-! We fix an arbitrary real inner-product space `F` for the whole file. Stating
 the constraints once with `variable` lets the theorem below inherit them
 automatically; Lean inserts only the binders a declaration actually mentions. -/
-variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+variable {F : Type*} [SeminormedAddCommGroup F] [InnerProductSpace ℝ F]
 
 /-- **Parallelogram law.** For *any* two vectors, the sum of the squared norms
 of the sum and the difference equals twice the sum of the individual squared
@@ -126,4 +132,4 @@ theorem parallelogram_law (u v : F) :
          `⟪v, u⟫` against `⟪v, u⟫`, term by term.) -/
     _ = 2 * ‖u‖ ^ 2 + 2 * ‖v‖ ^ 2 := by ring
 
-end Analysis
+end Geometry

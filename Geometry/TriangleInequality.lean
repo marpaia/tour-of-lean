@@ -45,17 +45,62 @@ bounded the lengths add only up to an inequality. Equality holds precisely when
 the cross term hits its Cauchy–Schwarz ceiling — when `u` and `v` point the same
 way — which is the degenerate triangle flattened onto a line.
 
+## Isn't this already built into the norm?
+
+It is — and seeing why we prove it anyway is half the lesson. The setting below
+opens with `[SeminormedAddCommGroup F]`, and a seminormed group does not merely
+carry a seminorm; it carries one that *already* obeys `‖u + v‖ ≤ ‖u‖ + ‖v‖` (the
+triangle inequality is one of the seminorm axioms, definiteness is not). Mathlib
+even names that promise — `norm_add_le` — and `exact norm_add_le u v` would close
+this file's goal on its first line. So what is the inner-product proof *for*?
+
+A fact and its *provenance* are different things. In the bundled setting
+`[SeminormedAddCommGroup F] [InnerProductSpace ℝ F]` the seminorm is handed to us
+ready-made, and the inner product only *links* to it through the bridge
+`⟪x, x⟫ = ‖x‖²`; here the triangle inequality holds by assumption, and the proof
+below re-derives a fact the typeclasses already guaranteed.
+
+But there is a more primitive starting point at which nothing about length is
+assumed at all. Give Mathlib only an inner product — the bilinearity of
+`Bilinearity.lean`, its symmetry, and the lone positivity `0 ≤ ⟪x, x⟫` — and
+*define* a candidate length by `‖x‖ := √⟪x, x⟫`. Now `‖·‖` is just a formula, and
+nothing yet entitles it to be called a length. Most of the seminorm laws — `‖0‖ =
+0`, `‖-x‖ = ‖x‖`, homogeneity — follow by direct algebra from the inner product;
+exactly one needs the detour through Cauchy–Schwarz, and that one is the triangle
+inequality. The only way to earn it is the calculation in this file: recast
+`‖u + v‖²` as an inner product, bound its cross term with Cauchy–Schwarz, and
+watch the right-hand side close into the perfect square `(‖u‖ + ‖v‖)²`. Those
+laws together make `√⟪x, x⟫` a genuine *seminorm* — which is exactly the setting
+this file works in, and why definiteness never appears. The one law left out,
+*definiteness* (`‖x‖ = 0 → x = 0`), is the single thing a seminorm may lack; it
+holds only when the inner product is itself definite (`⟪x, x⟫ = 0 → x = 0`), the
+extra axiom separating a `PreInnerProductSpace.Core` (which Mathlib promotes to a
+*seminormed* space) from an `InnerProductSpace.Core` (which `InnerProductSpace.ofCore`
+promotes to a *normed* one). Either way the triangle-inequality field is proved
+from the core's Cauchy–Schwarz lemma by the very squared-norm argument we run below.
+
+So the proof reads two ways at once. In the setting we work in it re-proves a
+promised fact — a clean specimen of the theorem chaining this file is here to
+teach. In the construction that *builds* a norm from an inner product it is
+load-bearing: the step that turns the formula `√⟪x, x⟫` into a genuine length,
+and so the precise sense in which "an inner product induces a norm" is a theorem
+to be proved and not a slogan to be repeated.
+
 ## The setting
 
 We work over an arbitrary type `F` carrying two pieces of structure:
 
-  * `[NormedAddCommGroup F]` — vectors can be added, negated, and measured:
-    we have `+`, `0`, unary `-`, and a norm `‖·‖`.
-  * `[InnerProductSpace ℝ F]` — there is a real inner product `⟪·,·⟫_ℝ`, tied
-    to the norm by `⟪x, x⟫_ℝ = ‖x‖²`.
+  * `[SeminormedAddCommGroup F]` — vectors can be added, negated, and measured by
+    a *seminorm* `‖·‖`: a length not required to be definite, so a nonzero vector
+    may still have `‖x‖ = 0`.
+  * `[InnerProductSpace ℝ F]` — there is a real inner product `⟪·,·⟫_ℝ`, tied to
+    the seminorm by `⟪x, x⟫_ℝ = ‖x‖²`.
 
-No dimension or coordinate is ever mentioned, so the theorem holds in the plane,
-in `ℝⁿ`, and in infinite-dimensional spaces alike.
+Neither this proof nor the Cauchy–Schwarz it leans on uses *definiteness*, so the
+seminorm — the weakest setting `InnerProductSpace` requires — is all we assume
+(matching Mathlib's `Norm_Seminormed` section). No dimension or coordinate is ever
+mentioned either, so the theorem holds in the plane, in `ℝⁿ`, and in
+infinite-dimensional spaces alike.
 
 ## The argument
 
@@ -75,12 +120,12 @@ import Analysis.CauchySchwarz
 -- enables the `⟪x, y⟫_𝕜` notation for the inner product
 open scoped InnerProductSpace
 
-namespace Analysis
+namespace Geometry
 
 /-! We fix an arbitrary real inner-product space `F` for the whole file. Stating
 the constraints once with `variable` lets the theorem below inherit them
 automatically; Lean inserts only the binders a declaration actually mentions. -/
-variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+variable {F : Type*} [SeminormedAddCommGroup F] [InnerProductSpace ℝ F]
 
 /-- **Triangle inequality.** The length of a sum never exceeds the sum of the
 lengths.
@@ -117,8 +162,8 @@ theorem triangle_inequality (u v : F) : ‖u + v‖ ≤ ‖u‖ + ‖v‖ := by
             rw [real_inner_self_eq_norm_sq u, real_inner_self_eq_norm_sq v,
               real_inner_comm v u]
             ring
-        /- Here Cauchy–Schwarz enters — our own `cauchy_schwarz` from the
-           imported companion file. It gives the *absolute-value* bound
+        /- Here Cauchy–Schwarz enters — our own `cauchy_schwarz`, imported from
+           the `Analysis` foundations. It gives the *absolute-value* bound
            `|⟪u, v⟫_ℝ| ≤ ‖u‖ * ‖v‖`, which is strictly stronger than what we need:
            the cross term itself is at most its own absolute value
            (`le_abs_self`), so chaining the two with `le_trans` yields the
@@ -129,10 +174,10 @@ theorem triangle_inequality (u v : F) : ‖u + v‖ ≤ ‖u‖ + ‖v‖ := by
            positive constant `2` and recognizes `(‖u‖ + ‖v‖)²` on the other
            side. -/
       _ ≤ (‖u‖ + ‖v‖) ^ 2 := by
-            nlinarith [le_trans (le_abs_self ⟪u, v⟫_ℝ) (cauchy_schwarz u v)]
+            nlinarith [le_trans (le_abs_self ⟪u, v⟫_ℝ) (Analysis.cauchy_schwarz u v)]
   /- Finally we descend from squares to lengths. `abs_le_of_sq_le_sq'` takes a
      squared inequality `a² ≤ b²` together with `0 ≤ b` and returns the pair
      `-b ≤ a ∧ a ≤ b`; the second component is exactly `‖u + v‖ ≤ ‖u‖ + ‖v‖`. -/
   exact (abs_le_of_sq_le_sq' hsq hsum_nonneg).2
 
-end Analysis
+end Geometry

@@ -1,7 +1,7 @@
 name = "math"
 version = "0.1.0"
 keywords = ["math"]
-defaultTargets = ["LinearAlgebra", "Analysis"]
+defaultTargets = ["LinearAlgebra", "Analysis", "Geometry"]
 
 [leanOptions]
 pp.unicode.fun = true # pretty-prints `fun a ↦ b`
@@ -19,3 +19,6 @@ name = "LinearAlgebra"
 
 [[lean_lib]]
 name = "Analysis"
+
+[[lean_lib]]
+name = "Geometry"
