@@ -132,4 +132,26 @@ theorem parallelogram_law (u v : F) :
          `⟪v, u⟫` against `⟪v, u⟫`, term by term.) -/
     _ = 2 * ‖u‖ ^ 2 + 2 * ‖v‖ ^ 2 := by ring
 
+/-! ### The same theorem in Mathlib
+
+Mathlib proves this as `parallelogram_law_with_norm`, over the same seminorm. It
+takes the scalar field as an explicit first argument, `ℝ` for us, since the
+identity holds over any `RCLike` field and the vectors alone do not pin it down.
+It also gathers the right side as `2 * (‖u‖ ^ 2 + ‖v‖ ^ 2)`, so recovering our
+form is a single `ring` step after rewriting with it: -/
+
+example (u v : F) :
+    ‖u + v‖ ^ 2 + ‖u - v‖ ^ 2 = 2 * ‖u‖ ^ 2 + 2 * ‖v‖ ^ 2 := by
+  rw [parallelogram_law_with_norm ℝ u v]; ring
+
+/-! The companion `parallelogram_law` states the same identity with inner products
+in place of norms, `⟪u + v, u + v⟫ + ⟪u - v, u - v⟫ = 2 * (⟪u, u⟫ + ⟪v, v⟫)`.
+Rewriting each self-pairing `⟪x, x⟫_ℝ` back into `‖x‖ ^ 2` recovers our form: -/
+
+example (u v : F) :
+    ‖u + v‖ ^ 2 + ‖u - v‖ ^ 2 = 2 * ‖u‖ ^ 2 + 2 * ‖v‖ ^ 2 := by
+  have h := _root_.parallelogram_law (𝕜 := ℝ) (x := u) (y := v)
+  simp only [real_inner_self_eq_norm_sq] at h
+  linarith [h]
+
 end Geometry

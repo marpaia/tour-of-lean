@@ -156,4 +156,23 @@ theorem cauchy_schwarz (u v : F) : |⟪u, v⟫_ℝ| ≤ ‖u‖ * ‖v‖ := by
   rw [← mul_pow] at key
   exact abs_le_of_sq_le_sq key (by positivity)
 
+/-! ### The same theorem in Mathlib
+
+Cauchy–Schwarz is already in Mathlib, as `abs_real_inner_le_norm`. It carries
+this exact statement, in the same `Norm_Seminormed` section over the same
+seminorm. The two vectors are explicit arguments, in order, so calling it is a
+one-liner: -/
+
+example (u v : F) : |⟪u, v⟫_ℝ| ≤ ‖u‖ * ‖v‖ := abs_real_inner_le_norm u v
+
+/-! It comes in three forms, and picking the right one saves a step. The
+absolute-value version above is the headline. `real_inner_le_norm u v` drops the
+`|·|` to give the one-sided `⟪u, v⟫_ℝ ≤ ‖u‖ * ‖v‖` directly, usually what a bound
+on a cross term wants. `norm_inner_le_norm` is the general version over any field,
+`‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖`; over `ℝ` the scalar norm is the absolute value, so it
+collapses straight back to the statement we proved: -/
+
+example (u v : F) : |⟪u, v⟫_ℝ| ≤ ‖u‖ * ‖v‖ := by
+  simpa [Real.norm_eq_abs] using norm_inner_le_norm (𝕜 := ℝ) u v
+
 end Analysis

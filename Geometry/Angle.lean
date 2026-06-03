@@ -79,6 +79,7 @@ and in infinite-dimensional spaces alike.
 
 import Analysis.CauchySchwarz
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
+import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
 
 -- enables the `⟪x, y⟫_𝕜` notation for the inner product
 open scoped InnerProductSpace
@@ -152,5 +153,35 @@ theorem inner_eq_norm_mul_norm_mul_cos_angle (u v : F) :
   · /- Main case `‖u‖‖v‖ ≠ 0`: substitute `cos_angle` and cancel the denominator
        against the leading factor (`mul_div_cancel₀`). -/
     rw [cos_angle, mul_div_cancel₀ _ h]
+
+/-! ### The same definitions in Mathlib
+
+Mathlib builds all of this in its `InnerProductGeometry` namespace, matching ours
+nearly symbol for symbol. `InnerProductGeometry.angle` is the same
+`Real.arccos (⟪u, v⟫_ℝ / (‖u‖ * ‖v‖))`, `InnerProductGeometry.cos_angle` is our
+`cos_angle`, and the cosine identity is `cos_angle_mul_norm_mul_norm`, stated as
+`Real.cos (angle u v) * (‖u‖ * ‖v‖) = ⟪u, v⟫_ℝ`.
+
+The one real difference is generality. Mathlib's `InnerProductGeometry` is built
+over a `NormedAddCommGroup`, so it assumes a definite norm. This file defines
+`angle` over a `SeminormedAddCommGroup`, which is why Mathlib's lemmas cannot be
+applied to this file's `F` directly and why the degenerate `‖u‖ * ‖v‖ = 0` case
+above goes through Cauchy–Schwarz instead of `inner_zero_left`. Here the
+repository is strictly more general than Mathlib.
+
+Wherever Mathlib is defined at all the two agree on the nose: restrict to a
+`NormedAddCommGroup`, where the definiteness Mathlib assumes holds, and the
+definitions coincide. Our `angle` is `InnerProductGeometry.angle` literally, by
+`rfl`: -/
+
+example {G : Type*} [NormedAddCommGroup G] [InnerProductSpace ℝ G] (u v : G) :
+    angle u v = InnerProductGeometry.angle u v := rfl
+
+/-! And our `cos_angle` is Mathlib's `InnerProductGeometry.cos_angle` verbatim,
+the same statement discharged by the same lemma: -/
+
+example {G : Type*} [NormedAddCommGroup G] [InnerProductSpace ℝ G] (u v : G) :
+    Real.cos (angle u v) = ⟪u, v⟫_ℝ / (‖u‖ * ‖v‖) :=
+  InnerProductGeometry.cos_angle u v
 
 end Geometry

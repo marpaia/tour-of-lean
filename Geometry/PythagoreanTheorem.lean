@@ -111,4 +111,27 @@ theorem pythagorean_theorem (u v : F) (h : ⟪u, v⟫_ℝ = 0) :
          which is pure arithmetic and the job of `ring`. -/
     _ = ‖u‖ ^ 2 + ‖v‖ ^ 2 := by ring
 
+/-! ### The same theorem in Mathlib
+
+Mathlib proves this as `norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero`, in
+the same `Norm_Seminormed` section over a seminorm, taking the two vectors and
+the orthogonality hypothesis as explicit arguments. It writes the squared norms
+as `‖·‖ * ‖·‖` rather than `‖·‖ ^ 2`, so recovering our exact statement is one
+`pow_two` rewrite on each square: -/
+
+example (u v : F) (h : ⟪u, v⟫_ℝ = 0) :
+    ‖u + v‖ ^ 2 = ‖u‖ ^ 2 + ‖v‖ ^ 2 := by
+  rw [pow_two, pow_two, pow_two]
+  exact norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero u v h
+
+/-! The full characterization `⟪u, v⟫_ℝ = 0 ↔ …` is
+`norm_add_sq_eq_norm_sq_add_norm_sq_iff_real_inner_eq_zero`; its converse half is
+what `Geometry.Orthogonality` proves, and reading it from orthogonality to the
+identity with `.mpr` recovers the theorem above: -/
+
+example (u v : F) (h : ⟪u, v⟫_ℝ = 0) :
+    ‖u + v‖ ^ 2 = ‖u‖ ^ 2 + ‖v‖ ^ 2 := by
+  rw [pow_two, pow_two, pow_two]
+  exact (norm_add_sq_eq_norm_sq_add_norm_sq_iff_real_inner_eq_zero u v).mpr h
+
 end Geometry

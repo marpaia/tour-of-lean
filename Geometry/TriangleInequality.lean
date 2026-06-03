@@ -180,4 +180,25 @@ theorem triangle_inequality (u v : F) : ‖u + v‖ ≤ ‖u‖ + ‖v‖ := by
      `-b ≤ a ∧ a ≤ b`; the second component is exactly `‖u + v‖ ≤ ‖u‖ + ‖v‖`. -/
   exact (abs_le_of_sq_le_sq' hsq hsum_nonneg).2
 
+/-! ### The same theorem in Mathlib
+
+As the opening section said, the triangle inequality is one of the seminorm
+axioms, so Mathlib hands it over directly as `norm_add_le`, with our exact
+statement and the two vectors as explicit arguments. This is the single line our
+proof could have been: -/
+
+example (u v : F) : ‖u + v‖ ≤ ‖u‖ + ‖v‖ := norm_add_le u v
+
+/-! The Cauchy–Schwarz route has Mathlib pieces too. `norm_add_sq_real` gives the
+expansion `‖u + v‖ ^ 2 = ‖u‖ ^ 2 + 2 * ⟪u, v⟫_ℝ + ‖v‖ ^ 2`, and
+`real_inner_le_norm` gives the one-sided bound `⟪u, v⟫_ℝ ≤ ‖u‖ * ‖v‖`. Reducing to
+squares with `abs_le_of_sq_le_sq'`, then handing those two facts to `nlinarith`,
+rebuilds the argument we ran above: -/
+
+example (u v : F) : ‖u + v‖ ≤ ‖u‖ + ‖v‖ := by
+  have hsq : ‖u + v‖ ^ 2 ≤ (‖u‖ + ‖v‖) ^ 2 := by
+    rw [norm_add_sq_real]
+    nlinarith [real_inner_le_norm u v]
+  exact (abs_le_of_sq_le_sq' hsq (add_nonneg (norm_nonneg u) (norm_nonneg v))).2
+
 end Geometry

@@ -162,4 +162,34 @@ theorem inner_eq_zero_iff_norm_add_sq (u v : F) :
         real_inner_comm u v]
       ring
     linarith
+
+/-! ### The same theorems in Mathlib
+
+Each result here has a Mathlib counterpart. Symmetry is `inner_eq_zero_symm`,
+with both vectors implicit: -/
+
+example (u v : F) : ⟪u, v⟫_ℝ = 0 ↔ ⟪v, u⟫_ℝ = 0 := inner_eq_zero_symm
+
+/-! The Pythagorean characterization is
+`norm_add_sq_eq_norm_sq_add_norm_sq_iff_real_inner_eq_zero`. It runs in the
+opposite direction, with the norm equation on the left, so recovering our
+statement means flipping it with `Iff.symm` and rewriting its `‖·‖ * ‖·‖` into
+our `‖·‖ ^ 2`: -/
+
+example (u v : F) :
+    ⟪u, v⟫_ℝ = 0 ↔ ‖u + v‖ ^ 2 = ‖u‖ ^ 2 + ‖v‖ ^ 2 := by
+  rw [pow_two, pow_two, pow_two]
+  exact (norm_add_sq_eq_norm_sq_add_norm_sq_iff_real_inner_eq_zero u v).symm
+
+/-! The angle characterization is Mathlib's
+`InnerProductGeometry.inner_eq_zero_iff_angle_eq_pi_div_two`, the same statement
+under the same name. As with `Geometry.Angle`, that namespace assumes a
+`NormedAddCommGroup`, so it cannot be applied to this file's seminormed `F`
+directly. Restricting to a normed space, where the definiteness it assumes holds,
+our statement is exactly its statement: -/
+
+example {G : Type*} [NormedAddCommGroup G] [InnerProductSpace ℝ G] (u v : G) :
+    ⟪u, v⟫_ℝ = 0 ↔ angle u v = π / 2 :=
+  InnerProductGeometry.inner_eq_zero_iff_angle_eq_pi_div_two u v
+
 end Geometry
