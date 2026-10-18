@@ -1,7 +1,7 @@
 name = "math"
 version = "0.1.0"
 keywords = ["math"]
-defaultTargets = ["LinearAlgebra", "Analysis", "Geometry"]
+defaultTargets = ["Arithmetic", "Geometry"]
 
 [leanOptions]
 pp.unicode.fun = true # pretty-prints `fun a ↦ b`
@@ -15,10 +15,9 @@ scope = "leanprover-community"
 rev = "v4.30.0-rc2"
 
 [[lean_lib]]
-name = "LinearAlgebra"
-
-[[lean_lib]]
-name = "Analysis"
+name = "Arithmetic"
+globs = ["Arithmetic.+"]
 
 [[lean_lib]]
 name = "Geometry"
+globs = ["Geometry.+"]
