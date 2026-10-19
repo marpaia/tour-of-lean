@@ -12,9 +12,17 @@ theorem norm_add_sq (u v : F) :
       = ⟪u + v, u + v⟫_ℝ := by
           rw [real_inner_self_eq_norm_sq]
     _ = ⟪u, u⟫_ℝ + ⟪u, v⟫_ℝ + (⟪v, u⟫_ℝ + ⟪v, v⟫_ℝ) := by
-          rw [inner_add_left, inner_add_right, inner_add_right]
+          rw [
+            inner_add_left,
+            inner_add_right,
+            inner_add_right
+          ]
     _ = ‖u‖ ^ 2 + ⟪u, v⟫_ℝ + (⟪u, v⟫_ℝ + ‖v‖ ^ 2) := by
-          rw [real_inner_self_eq_norm_sq u, real_inner_self_eq_norm_sq v, real_inner_comm u v]
+          rw [
+            real_inner_self_eq_norm_sq u,
+            real_inner_self_eq_norm_sq v,
+            real_inner_comm u v
+          ]
     _ = ‖u‖ ^ 2 + 2 * ⟪u, v⟫_ℝ + ‖v‖ ^ 2 := by ring
 
 theorem pythagorean_theorem (u v : F) (h : ⟪u, v⟫_ℝ = 0) :
@@ -36,7 +44,11 @@ theorem inner_eq_zero_iff_norm_add_sq (u v : F) :
 
 example (u v : F) :
     ⟪u, v⟫_ℝ = 0 ↔ ‖u + v‖ ^ 2 = ‖u‖ ^ 2 + ‖v‖ ^ 2 := by
-  rw [pow_two, pow_two, pow_two]
+  rw [
+    pow_two,
+    pow_two,
+    pow_two
+  ]
   exact (norm_add_sq_eq_norm_sq_add_norm_sq_iff_real_inner_eq_zero u v).symm
 
 end Geometry

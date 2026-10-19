@@ -1,5 +1,3 @@
-set_option pp.fieldNotation false
-
 inductive ℕ where
   | zero : ℕ
   | succ (n : ℕ) : ℕ

@@ -1,7 +1,5 @@
 import Arithmetic.Naturals
 
-set_option pp.fieldNotation false
-
 namespace ℕ
 
 def mul : ℕ → ℕ → ℕ
