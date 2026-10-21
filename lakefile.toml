@@ -1,7 +1,7 @@
 name = "math"
 version = "0.1.0"
 keywords = ["math"]
-defaultTargets = ["Arithmetic", "Geometry"]
+defaultTargets = ["Naturals", "Integers", "Geometry"]
 
 [leanOptions]
 pp.unicode.fun = true # pretty-prints `fun a ↦ b`
@@ -15,8 +15,12 @@ scope = "leanprover-community"
 rev = "v4.30.0-rc2"
 
 [[lean_lib]]
-name = "Arithmetic"
-globs = ["Arithmetic.+"]
+name = "Naturals"
+globs = ["Naturals.+"]
+
+[[lean_lib]]
+name = "Integers"
+globs = ["Integers.+"]
 
 [[lean_lib]]
 name = "Geometry"

@@ -6,6 +6,10 @@ namespace Geometry
 
 variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 
+/-- `‖u + v‖² = ‖u‖² + 2⟪u, v⟫ + ‖v‖²`, by expanding the norm through the inner product.
+
+* `F` is any real inner product space, supplied by the `variable` line.
+* `ring` does the commutative-ring bookkeeping that `Naturals` and `Integers` did by hand. -/
 theorem norm_add_sq (u v : F) :
     ‖u + v‖ ^ 2 = ‖u‖ ^ 2 + 2 * ⟪u, v⟫_ℝ + ‖v‖ ^ 2 := by
   calc ‖u + v‖ ^ 2
@@ -25,6 +29,7 @@ theorem norm_add_sq (u v : F) :
           ]
     _ = ‖u‖ ^ 2 + 2 * ⟪u, v⟫_ℝ + ‖v‖ ^ 2 := by ring
 
+/-- **Pythagorean theorem.** If `⟪u, v⟫ = 0` then `‖u + v‖² = ‖u‖² + ‖v‖²`. -/
 theorem pythagorean_theorem (u v : F) (h : ⟪u, v⟫_ℝ = 0) :
     ‖u + v‖ ^ 2 = ‖u‖ ^ 2 + ‖v‖ ^ 2 := by
   rw [
@@ -33,6 +38,9 @@ theorem pythagorean_theorem (u v : F) (h : ⟪u, v⟫_ℝ = 0) :
   ]
   ring
 
+/-- `⟪u, v⟫ = 0 ↔ ‖u + v‖² = ‖u‖² + ‖v‖²`: the converse holds too.
+
+For the converse, `linarith` treats `⟪u, v⟫` as an unknown `x` and solves `2x = 0`. -/
 theorem inner_eq_zero_iff_norm_add_sq (u v : F) :
     ⟪u, v⟫_ℝ = 0 ↔ ‖u + v‖ ^ 2 = ‖u‖ ^ 2 + ‖v‖ ^ 2 := by
   constructor
@@ -42,6 +50,8 @@ theorem inner_eq_zero_iff_norm_add_sq (u v : F) :
     rw [norm_add_sq] at h
     linarith
 
+/-- The same equivalence, from Mathlib. Mathlib writes squares as `x * x` and states it
+the other way round. -/
 example (u v : F) :
     ⟪u, v⟫_ℝ = 0 ↔ ‖u + v‖ ^ 2 = ‖u‖ ^ 2 + ‖v‖ ^ 2 := by
   rw [

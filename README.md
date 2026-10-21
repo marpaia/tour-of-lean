@@ -2,7 +2,15 @@
 
 A short tour of Lean 4 for mathematicians. It assumes you know the mathematics and teaches only the Lean.
 
-There are two parts. **Arithmetic** builds the natural numbers from scratch in core Lean, with no library, to show how Lean works at a low level. **Geometry** then uses Mathlib, Lean's library of formalized mathematics, to prove two familiar results about inner product spaces. It shows what working with the library looks like.
+The tour has three parts, and each adds one layer:
+
+| Part | Builds | Adds |
+|---|---|---|
+| 1. Naturals | ℕ from scratch | what a proof *is*: proofs written directly as terms |
+| 2. Integers | ℤ on top of ℕ | tactics, which build those terms interactively |
+| 3. Geometry | Pythagoras and Cauchy–Schwarz | Mathlib, Lean's library of formalized mathematics |
+
+Parts 1 and 2 use core Lean only, with nothing imported from outside this repository.
 
 ## Setup
 
@@ -18,35 +26,81 @@ There are two parts. **Arithmetic** builds the natural numbers from scratch in c
 
 ## How to read a file
 
-Open a file and click into a proof. The **infoview** panel shows the current goal: the hypotheses in scope above the `⊢`, and what remains to be proved below it. Move the cursor line by line and watch each tactic change the goal. This is the main way to read Lean. The proofs make much more sense in the infoview than on the page.
+Read the files in order, since each builds on the ones before. The **infoview** panel is the main way to read Lean. Proofs make much more sense there than on the page.
 
-The files have no comments, so each one can be read whole at a glance. The list below says what each file proves and which Lean features it introduces. Read the files in order, since each builds on the ones before. Long `rw` lists put one lemma per line, so you can step through them one rewrite at a time in the infoview. Hover over any name to see its type and documentation. Ctrl-click (Cmd-click on macOS) jumps to its definition.
+- **Part 1:** put the cursor on a term to see its type, which is the statement it proves.
+- **Parts 2 and 3:** put the cursor in a tactic proof to see the goal. Hypotheses are above the `⊢`, and what remains to be proved is below it. Step line by line and watch each tactic change the goal. Long `rw` lists put one lemma per line so you can step through each rewrite.
+- **Hover** over any name to see its type and docstring. **Ctrl-click** (Cmd-click on macOS) jumps to its definition.
 
-## Part 1: Arithmetic
+Every definition and theorem has a docstring saying what it states, plus anything about the proof the code doesn't make clear.
 
-Core Lean only. Nothing is imported.
+## Part 1: Naturals, without tactics
 
-1. **[`Arithmetic/Naturals.lean`](Arithmetic/Naturals.lean)**: the natural numbers, addition, and even numbers.
-   - Proves: `0 + n = n`, commutativity and associativity of addition, and that the sum of two even numbers is even.
-   - Learn: defining a type with `inductive`; functions by pattern matching and recursion; curried function types like `ℕ → ℕ → ℕ`; `instance` to give `+` a meaning; `theorem` and `example`; `rfl`, and the difference between equations that hold by computation and those that need proof; tactic proofs with `by`; `induction`; `rw`; propositions as types; proving `∃` with `⟨witness, proof⟩` and using it with `obtain`; `refine`; `calc`.
+A proof of `a = b` is a value of type `a = b`, and a proof by induction is a recursive function. Every proof in this part is written that way, directly.
 
-2. **[`Arithmetic/Multiplication.lean`](Arithmetic/Multiplication.lean)**: multiplication.
-   - Proves: `0 * n = 0`, commutativity of multiplication, and distributivity.
-   - Learn: `import` to build on an earlier file. Otherwise nothing new: this file is practice with the tools from file 1, and a quick check that they have sunk in.
+**1. [`Naturals/Basic.lean`](Naturals/Basic.lean)**: ℕ as `zero` and `succ n` (that is, `n + 1`).
 
-## Part 2: Geometry
+- `inductive` types, from which Lean derives the Peano axioms and induction
 
-These files use Mathlib. The tactics are the same as in Part 1. What is new is the library: thousands of definitions and lemmas, typeclasses that describe mathematical structure, and automation for routine algebra. Each file ends with an `example` that proves the same statement by citing Mathlib's version directly.
+**2. [`Naturals/Add.lean`](Naturals/Add.lean)**: `0 + n = n`, commutativity, associativity.
 
-3. **[`Geometry/PythagoreanTheorem.lean`](Geometry/PythagoreanTheorem.lean)**: the Pythagorean theorem in a real inner product space.
-   - Proves: the expansion `‖u + v‖² = ‖u‖² + 2⟪u, v⟫ + ‖v‖²`, and from it `⟪u, v⟫ = 0 ↔ ‖u + v‖² = ‖u‖² + ‖v‖²`.
-   - Learn: importing Mathlib; `variable` with typeclass hypotheses, Lean's way of saying "let `F` be a real inner product space"; rewriting with Mathlib lemmas; `ring`, which automates the bookkeeping Part 1 did by hand; `linarith`; `↔` with `constructor`; `intro` and `exact`; rewriting a hypothesis with `rw ... at h`; citing Mathlib's version of a result instead of proving it.
+- functions by pattern matching and recursion
+- curried types: `ℕ → ℕ → ℕ` means `ℕ → (ℕ → ℕ)`
+- `instance`, to give `+` a meaning
+- `rfl`, for equations that hold by computation (`m + 0 = m`), unlike those that need proof (`0 + m = m`)
+- induction as a recursive function
+- `congrArg`, `.symm` and `.trans`, to build proofs from other proofs
 
-4. **[`Geometry/CauchySchwarz.lean`](Geometry/CauchySchwarz.lean)**: the Cauchy–Schwarz inequality `|⟪u, v⟫| ≤ ‖u‖ ‖v‖`, via the discriminant of a nonnegative quadratic.
-   - Learn: `have` for intermediate claims; `∀` statements; using a lemma name as a complete proof; rewriting right to left with `←`; applying a library theorem (`discrim_le_zero`) to your own hypothesis; `positivity`.
+**3. [`Naturals/Mul.lean`](Naturals/Mul.lean)**: `0 · n = 0`, commutativity, distributivity.
+
+- `calc`, to chain equations
+- `congrArg` with a `fun`, to use an equation inside a larger expression
+
+**4. [`Naturals/Sub.lean`](Naturals/Sub.lean)**: truncated subtraction and `(m + n) - n = m`.
+
+- junk values: `1 - 2 = 0` in ℕ, just as `x / 0 = 0` in ℝ, because Lean functions are total
+
+## Part 2: Integers, with tactics
+
+Tactics are commands after `by` that build the proof term step by step. Case analysis on signs makes these proofs long to write as terms, and tactics keep them readable.
+
+**5. [`Integers/Basic.lean`](Integers/Basic.lean)**: ℤ as `ofNat n` (that is, `n`) and `negSucc n` (that is, `-(n + 1)`).
+
+- constructors that take arguments of another type
+- a representation with no quotient, the same as core Lean's `Int`
+
+**6. [`Integers/Neg.lean`](Integers/Neg.lean)**: `-(-a) = a`.
+
+- nested patterns such as `ofNat (succ n)`
+- `open ℕ (zero succ)`, to use names from another namespace
+- the first tactic proof, with `cases`
+
+**7. [`Integers/Add.lean`](Integers/Add.lean)**: commutativity and `-a + a = 0`, which is what ℕ lacks.
+
+- `rw`, the `induction` tactic, and `exact`
+- pattern matching on two arguments at once
+- stating defining equations as `rfl` lemmas so `rw` can use them
+
+## Part 3: Geometry, with Mathlib
+
+What is new is the library: thousands of lemmas, typeclasses that describe mathematical structure, and automation for routine algebra. Each file ends with an `example` that cites Mathlib's version of the result.
+
+**8. [`Geometry/PythagoreanTheorem.lean`](Geometry/PythagoreanTheorem.lean)**: `⟪u, v⟫ = 0 ↔ ‖u + v‖² = ‖u‖² + ‖v‖²` in a real inner product space.
+
+- `variable` with typeclass hypotheses: "let `F` be a real inner product space"
+- `ring` and `linarith`, which automate the algebra Parts 1 and 2 did by hand
+- `↔` with `constructor` and `intro`
+- `rw ... at h`, to rewrite a hypothesis
+
+**9. [`Geometry/CauchySchwarz.lean`](Geometry/CauchySchwarz.lean)**: `|⟪u, v⟫| ≤ ‖u‖ ‖v‖`, via the discriminant of a nonnegative quadratic.
+
+- `have`, for intermediate claims
+- applying a library theorem (`discrim_le_zero`) to your own hypothesis
+- rewriting right to left with `←`
+- `positivity`
 
 ## Where to go next
 
 - [Mathematics in Lean](https://leanprover-community.github.io/mathematics_in_lean/): the standard tutorial for doing mathematics with Mathlib.
 - [Mathlib documentation](https://leanprover-community.github.io/mathlib4_docs/): search for a lemma by name or statement.
-- [Natural Number Game](https://adam.math.hhu.de/#/g/leanprover-community/nng4): Part 1 in much greater depth, as an interactive game.
+- [Natural Number Game](https://adam.math.hhu.de/#/g/leanprover-community/nng4): the natural numbers in much greater depth, as an interactive game with tactics.
