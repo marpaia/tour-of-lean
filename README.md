@@ -73,7 +73,7 @@ The proof has the same shape, but the induction hypothesis is now named `ih`, an
 | File | Proves | Introduces |
 |---|---|---|
 | 5. [`Basic`](Integers/Basic.lean) | defines ℤ as `ofNat n` (`n`) and `negSucc n` (`-(n + 1)`) | constructors with arguments, and a representation that needs no quotient |
-| 6. [`Neg`](Integers/Neg.lean) | `-(-a) = a` | the first tactic proof, `cases`, nested patterns, `open` |
+| 6. [`Neg`](Integers/Neg.lean) | `-(-a) = a` | the first tactic proof, `cases`, nested `cases`, `open` |
 | 7. [`Add`](Integers/Add.lean) | commutativity, and `-a + a = 0`, which ℕ lacks | `rw`, `induction`, `exact` |
 
 ## Part 3: Geometry, with Mathlib
@@ -83,7 +83,7 @@ The tactics are the same as in Part 2. What is new is the library: thousands of 
 | File | Proves | Introduces |
 |---|---|---|
 | 8. [`PythagoreanTheorem`](Geometry/PythagoreanTheorem.lean) | `⟪u, v⟫ = 0 ↔ ‖u + v‖² = ‖u‖² + ‖v‖²` | `variable` to say "let `F` be a real inner product space", `ring`, `linarith`, `constructor`, `rw ... at h` |
-| 9. [`CauchySchwarz`](Geometry/CauchySchwarz.lean) | `\|⟪u, v⟫\| ≤ ‖u‖ ‖v‖`, via the discriminant | `have`, applying a library theorem to your own hypothesis, `←`, `positivity` |
+| 9. [`CauchySchwarz`](Geometry/CauchySchwarz.lean) | `\|⟪u, v⟫\| ≤ ‖u‖ ‖v‖`, via the discriminant | importing your own file to reuse `norm_add_sq`, `have`, applying a library theorem to your own hypothesis, `←`, `positivity` |
 
 ## Where to go next
 

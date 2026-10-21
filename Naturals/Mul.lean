@@ -25,9 +25,9 @@ theorem zero_mul : (n : ℕ) → zero * n = zero
 
 * `calc` chains equations, each with its own proof. Steps proved by `rfl` hold by computation.
 * `congrArg (fun x => succ (x + m)) h` uses `h` inside the expression `succ (_ + m)`. -/
-theorem succ_mul (m : ℕ) : (n : ℕ) → succ m * n = m * n + n
-  | zero => rfl
-  | succ n =>
+theorem succ_mul : (m n : ℕ) → succ m * n = m * n + n
+  | _, zero => rfl
+  | m, succ n =>
     calc succ m * succ n
         = succ (succ m * n + m) := rfl
       _ = succ (m * n + n + m) := congrArg (fun x => succ (x + m)) (succ_mul m n)
@@ -37,18 +37,18 @@ theorem succ_mul (m : ℕ) : (n : ℕ) → succ m * n = m * n + n
       _ = m * succ n + succ n := rfl
 
 /-- `m · n = n · m` -/
-theorem mul_comm (m : ℕ) : (n : ℕ) → m * n = n * m
-  | zero => (zero_mul m).symm
-  | succ n =>
+theorem mul_comm : (m n : ℕ) → m * n = n * m
+  | m, zero => (zero_mul m).symm
+  | m, succ n =>
     calc m * succ n
         = m * n + m := rfl
       _ = n * m + m := congrArg (fun x => x + m) (mul_comm m n)
       _ = succ n * m := (succ_mul n m).symm
 
 /-- `a · (b + c) = a · b + a · c` -/
-theorem mul_add (a b : ℕ) : (c : ℕ) → a * (b + c) = a * b + a * c
-  | zero => rfl
-  | succ c =>
+theorem mul_add : (a b c : ℕ) → a * (b + c) = a * b + a * c
+  | _, _, zero => rfl
+  | a, b, succ c =>
     calc a * (b + succ c)
         = a * (b + c) + a := rfl
       _ = a * b + a * c + a := congrArg (fun x => x + a) (mul_add a b c)

@@ -44,8 +44,7 @@ For the converse, `linarith` treats `⟪u, v⟫` as an unknown `x` and solves `2
 theorem inner_eq_zero_iff_norm_add_sq (u v : F) :
     ⟪u, v⟫_ℝ = 0 ↔ ‖u + v‖ ^ 2 = ‖u‖ ^ 2 + ‖v‖ ^ 2 := by
   constructor
-  · intro h
-    exact pythagorean_theorem u v h
+  · exact pythagorean_theorem u v
   · intro h
     rw [norm_add_sq] at h
     linarith

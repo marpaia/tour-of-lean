@@ -31,20 +31,20 @@ theorem zero_add : (n : ℕ) → zero + n = n
   | succ n => congrArg succ (zero_add n)
 
 /-- `(m + 1) + n = (m + n) + 1` -/
-theorem succ_add (m : ℕ) : (n : ℕ) → succ m + n = succ (m + n)
-  | zero => rfl
-  | succ n => congrArg succ (succ_add m n)
+theorem succ_add : (m n : ℕ) → succ m + n = succ (m + n)
+  | _, zero => rfl
+  | m, succ n => congrArg succ (succ_add m n)
 
 /-- `m + n = n + m`
 
 `h.symm` reverses an equation `h`, and `h₁.trans h₂` chains `a = b` and `b = c` into `a = c`. -/
-theorem add_comm (m : ℕ) : (n : ℕ) → m + n = n + m
-  | zero => (zero_add m).symm
-  | succ n => (congrArg succ (add_comm m n)).trans (succ_add n m).symm
+theorem add_comm : (m n : ℕ) → m + n = n + m
+  | m, zero => (zero_add m).symm
+  | m, succ n => (congrArg succ (add_comm m n)).trans (succ_add n m).symm
 
 /-- `(a + b) + c = a + (b + c)` -/
-theorem add_assoc (a b : ℕ) : (c : ℕ) → a + b + c = a + (b + c)
-  | zero => rfl
-  | succ c => congrArg succ (add_assoc a b c)
+theorem add_assoc : (a b c : ℕ) → a + b + c = a + (b + c)
+  | _, _, zero => rfl
+  | a, b, succ c => congrArg succ (add_assoc a b c)
 
 end ℕ
