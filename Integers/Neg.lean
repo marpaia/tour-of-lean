@@ -4,7 +4,7 @@ open ℕ (zero succ)
 
 namespace ℤ
 
-/-- Negation. `0` gets its own case because `-0` is `ofNat zero`, not a `negSucc`. -/
+/-- Negation. -/
 def neg : ℤ → ℤ
   | ofNat zero => ofNat zero
   | ofNat (succ n) => negSucc n
@@ -13,7 +13,7 @@ def neg : ℤ → ℤ
 /-- Lets `-a` stand for `neg a`. -/
 instance : Neg ℤ := ⟨neg⟩
 
-/-- `-(-a) = a`, by cases matching the three cases of `neg`.
+/-- `-(-a) = a`
 
 The first proof by tactics. After `by`, each command builds part of the proof term,
 and the infoview shows what remains to be proved. -/

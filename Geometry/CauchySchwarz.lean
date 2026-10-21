@@ -7,9 +7,9 @@ namespace Geometry
 
 variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 
-/-- **Cauchy–Schwarz inequality.** `|⟪u, v⟫| ≤ ‖u‖ ‖v‖`, by the discriminant argument. -/
+/-- **Cauchy–Schwarz inequality.** `|⟪u, v⟫| ≤ ‖u‖ ‖v‖` -/
 theorem cauchy_schwarz (u v : F) : |⟪u, v⟫_ℝ| ≤ ‖u‖ * ‖v‖ := by
-  -- `⟪u, v⟫² ≤ ‖u‖² ‖v‖²`, from the two steps below.
+  -- `⟪u, v⟫² ≤ ‖u‖² ‖v‖²`.
   have inner_sq_le : ⟪u, v⟫_ℝ ^ 2 ≤ ‖u‖ ^ 2 * ‖v‖ ^ 2 := by
     -- For every real `t`, `0 ≤ ‖u - t v‖² = ‖v‖² t² - 2⟪u, v⟫ t + ‖u‖²`.
     -- `t²` is written `t * t` because that is the form `discrim_le_zero` expects.
