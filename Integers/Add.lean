@@ -76,13 +76,16 @@ theorem subNatNat_self (n : ℕ) : subNatNat n n = ofNat zero := by
       ih
     ]
 
+-- The term that `induction` and `rw` built. `ℕ.rec` takes the base case and a step function
+-- `fun n ih => ...`, so `ih` is an argument, as in `Naturals`. Each `rw` became a `congrArg`.
+#print subNatNat_self
+
 /-- `-a + a = 0` -/
 theorem neg_add_cancel (a : ℤ) : -a + a = ofNat zero := by
-  cases a with
-  | ofNat n =>
-    cases n with
-    | zero => rfl
-    | succ n => exact subNatNat_self (succ n)
-  | negSucc n => exact subNatNat_self (succ n)
+  -- Exercise. Split into cases as `neg_neg` does. Some cases hold by computation (`rfl`).
+  -- The others compute to `subNatNat k k = ofNat zero` for some `k`. State that form with
+  -- `show subNatNat k k = ofNat zero`, then try `exact?`: it searches every lemma in scope,
+  -- including the ones proved earlier in this file.
+  sorry
 
 end ℤ

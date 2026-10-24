@@ -15,6 +15,8 @@ theorem cauchy_schwarz (u v : F) : |⟪u, v⟫_ℝ| ≤ ‖u‖ * ‖v‖ := by
       0 ≤ ‖v‖ ^ 2 * (t * t) + 2 * ⟪u, v⟫_ℝ * t + ‖u‖ ^ 2 := by
     intro t
     have h : 0 ≤ ‖u + t • v‖ ^ 2 := sq_nonneg _
+    -- Go to https://loogle.lean-lang.org and search for `inner ℝ _ (_ • _)`
+    -- and for `‖?a • ?b‖ = ‖?a‖ * ‖?b‖`.
     rw [
       norm_add_sq,
       real_inner_smul_right,
@@ -26,15 +28,21 @@ theorem cauchy_schwarz (u v : F) : |⟪u, v⟫_ℝ| ≤ ‖u‖ * ‖v‖ := by
     linarith
   -- A quadratic that is never negative has discriminant `≤ 0`,
   -- so `4⟪u, v⟫² - 4‖v‖² ‖u‖² ≤ 0`.
+  -- Go to https://loogle.lean-lang.org and search for `discrim, 0 ≤ _`.
   have discriminant_nonpos := discrim_le_zero quadratic_nonneg
   rw [discrim] at discriminant_nonpos
   -- `⟪u, v⟫² ≤ ‖u‖² ‖v‖²`.
   have inner_sq_le : ⟪u, v⟫_ℝ ^ 2 ≤ ‖u‖ ^ 2 * ‖v‖ ^ 2 := by linarith
   -- Take square roots, since `0 ≤ ‖u‖ ‖v‖`.
   rw [← mul_pow] at inner_sq_le
-  exact abs_le_of_sq_le_sq inner_sq_le (by positivity)
+  -- Exercise. Go to https://loogle.lean-lang.org and search for `|_| ≤ _, _ ^ 2 ≤ _ ^ 2`.
+  -- The lemma also needs `0 ≤ ‖u‖ * ‖v‖`, which `positivity` proves.
+  -- `exact?` does not help here: it finds Mathlib's Cauchy–Schwarz itself.
+  sorry
 
 /-- The same inequality, from Mathlib. -/
-example (u v : F) : |⟪u, v⟫_ℝ| ≤ ‖u‖ * ‖v‖ := abs_real_inner_le_norm u v
+example (u v : F) : |⟪u, v⟫_ℝ| ≤ ‖u‖ * ‖v‖ :=
+  -- Go to https://loogle.lean-lang.org and search for `|inner ℝ _ _| ≤ ‖_‖ * ‖_‖`.
+  abs_real_inner_le_norm u v
 
 end Geometry

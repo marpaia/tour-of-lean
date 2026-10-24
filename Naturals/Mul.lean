@@ -46,12 +46,10 @@ theorem mul_comm : (m n : ℕ) → m * n = n * m
       _ = succ n * m := (succ_mul n m).symm
 
 /-- `a · (b + c) = a · b + a · c` -/
-theorem mul_add : (a b c : ℕ) → a * (b + c) = a * b + a * c
-  | _, _, zero => rfl
-  | a, b, succ c =>
-    calc a * (b + succ c)
-        = a * (b + c) + a := rfl
-      _ = a * b + a * c + a := congrArg (fun x => x + a) (mul_add a b c)
-      _ = a * b + (a * c + a) := add_assoc (a * b) (a * c) a
+theorem mul_add : (a b c : ℕ) → a * (b + c) = a * b + a * c :=
+  -- Exercise. Recurse on `c`. For `succ c`, write a `calc` like the one in `succ_mul`.
+  -- Unfold `a * (b + succ c)` by `rfl`, use the recursive call inside `_ + a`,
+  -- then regroup with `add_assoc`.
+  sorry
 
 end ℕ

@@ -43,8 +43,9 @@ theorem add_comm : (m n : ℕ) → m + n = n + m
   | m, succ n => (congrArg succ (add_comm m n)).trans (succ_add n m).symm
 
 /-- `(a + b) + c = a + (b + c)` -/
-theorem add_assoc : (a b c : ℕ) → a + b + c = a + (b + c)
-  | _, _, zero => rfl
-  | a, b, succ c => congrArg succ (add_assoc a b c)
+theorem add_assoc : (a b c : ℕ) → a + b + c = a + (b + c) :=
+  -- Exercise. `add` recurses on its second argument, so recurse on `c`.
+  -- `succ_add` shows how to match on several arguments at once, and `zero_add` has the same shape.
+  sorry
 
 end ℕ
