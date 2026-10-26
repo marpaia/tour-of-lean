@@ -6,7 +6,6 @@
 -- Types are values too. `Nat : Type`, and `Type` itself has a type.
 #check Nat
 #check Type
-#check Type 1
 
 /-- Doubles `n`. -/
 def double (n : Nat) : Nat := 2 * n

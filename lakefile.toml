@@ -1,7 +1,7 @@
 name = "math"
 version = "0.1.0"
 keywords = ["math"]
-defaultTargets = ["Basics", "Naturals", "Integers", "Geometry"]
+defaultTargets = ["Basics"]
 
 [leanOptions]
 pp.unicode.fun = true # pretty-prints `fun a ↦ b`
@@ -17,15 +17,3 @@ rev = "v4.30.0-rc2"
 [[lean_lib]]
 name = "Basics"
 globs = ["Basics.+"]
-
-[[lean_lib]]
-name = "Naturals"
-globs = ["Naturals.+"]
-
-[[lean_lib]]
-name = "Integers"
-globs = ["Integers.+"]
-
-[[lean_lib]]
-name = "Geometry"
-globs = ["Geometry.+"]
