@@ -12,7 +12,7 @@ def buzz (n : Nat) : String :=
   else
     ""
 
-/-- Fizz if n ∣ 3, Buzz if n ∣ 5, otherwise n -/
+/-- Fizz if 3 ∣ n, Buzz if 5 ∣ n, otherwise n -/
 def fizzbuzz (n : Nat) : String :=
   if 3 ∣ n ∨ 5 ∣ n then
     fizz n ++ buzz n
