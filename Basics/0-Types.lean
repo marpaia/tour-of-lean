@@ -1,4 +1,4 @@
--- Every value has a type. The infoview shows `value : type` at the cursor.
+-- Every value has a type. `#check` shows it.
 #check 2
 #check "Fizz"
 #check 2 + 2
