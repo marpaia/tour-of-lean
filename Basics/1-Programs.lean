@@ -22,7 +22,7 @@ def fizzbuzz (n : Nat) : String :=
 #eval (List.range' 1 16).map fizzbuzz
 
 /-- `fizzbuzz 15 = "FizzBuzz"` -/
-example : fizzbuzz 15 = "FizzBuzz" := rfl
+theorem fizzbuzz_fifteen : fizzbuzz 15 = "FizzBuzz" := rfl
 
 /-- `3 ∣ n → fizz n = "Fizz"` -/
 theorem fizz_of_dvd (n : Nat) (h3 : 3 ∣ n) : fizz n = "Fizz" := by
