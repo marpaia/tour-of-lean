@@ -1,7 +1,7 @@
 name = "math"
 version = "0.1.0"
 keywords = ["math"]
-defaultTargets = ["Basics"]
+defaultTargets = ["Basics", "Surfaces"]
 
 [leanOptions]
 pp.unicode.fun = true # pretty-prints `fun a ↦ b`
@@ -12,8 +12,12 @@ maxSynthPendingDepth = 3
 [[require]]
 name = "mathlib"
 scope = "leanprover-community"
-rev = "v4.30.0-rc2"
+rev = "v4.35.0"
 
 [[lean_lib]]
 name = "Basics"
 globs = ["Basics.+"]
+
+[[lean_lib]]
+name = "Surfaces"
+globs = ["Surfaces.+"]
