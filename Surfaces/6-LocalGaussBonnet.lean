@@ -1,12 +1,15 @@
-import Surfaces.«5-Curves» /- geodesicCurvature, K, areaElement -/
+import Surfaces.«5-GeodesicCurvature» /- geodesicCurvature, OrthonormalFrame, K, areaElement -/
+import Surfaces.«2-Orientation» /- orientedAngle -/
+import Surfaces.Notation /- ℝ², ℝ³, ∂ᵤ, ∂ᵥ, cross -/
 import Mathlib.Algebra.BigOperators.Group.Finset.Defs /- ∑ -/
-import Mathlib.Analysis.Calculus.Deriv.Basic /- HasDerivWithinAt -/
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic /- Real.pi -/
-import Mathlib.Basic.Real.Sign /- Real.sign -/
-import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic /- InnerProductGeometry.angle -/
+import Mathlib.Analysis.Normed.Lp.MeasurableSpace /- MeasurableSpace ℝ² -/
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic /- π -/
 import Mathlib.LinearAlgebra.LinearIndependent.Defs /- LinearIndependent -/
+import Mathlib.Logic.Equiv.Fin.Rotate /- finRotate -/
+import Mathlib.MeasureTheory.Integral.Bochner.Basic /- ∫ x in R, f x -/
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic /- ∫ s in a..b, f s -/
-import Mathlib.Order.Interval.Set.Defs /- Set.Ioo, Set.Iio, Set.Ioi -/
+import Mathlib.MeasureTheory.Measure.Haar.OfBasis /- volume on ℝ² -/
+import Mathlib.Tactic.Linarith.Frontend /- linarith -/
 import Mathlib.Topology.Bornology.Basic /- Bornology.IsBounded -/
 import Mathlib.Topology.Connected.Basic /- connectedComponentIn -/
 import Mathlib.Topology.Defs.Filter /- 𝓝[>] -/
@@ -14,139 +17,178 @@ import Mathlib.Topology.Defs.Filter /- 𝓝[>] -/
 /-!
 # 6. Local Gauss–Bonnet
 
-A simple closed curve `γ = σ ∘ π` in a single patch encloses a region of the surface. Gauss–Bonnet
-(Pressley, Theorem 13.1.2) says that the geodesic curvature around `γ` and the Gaussian curvature
-inside it add up to `2π`.
+A *curvilinear polygon* is a simple closed curve made of smooth sides `c₀, …, cₙ₋₁` that meet at
+corners. On a patch, the sides trace arcs `γⱼ = σ ∘ cⱼ` on the surface, bounding a region `R`. Local
+Gauss–Bonnet (Pressley, Theorem 13.2.2; do Carmo, Section 4-5) says that the geodesic curvature of
+the arcs, the Gaussian curvature inside, and the exterior angles at the corners add up to `2π`,
 
-  `∫ κg ds = 2π - ∫∫_{int γ} K dA`
+  `Σⱼ ∫ κg ds + ∫∫_R K dA + Σⱼ δⱼ = 2π`.
 
-The proof integrates `κg = θ̇ - e′ · ė″` from `5-Curves` around the curve. The term `θ̇` gives
-`2π` by Hopf's Umlaufsatz (Theorem 3.1.4), because the tangent of a simple closed curve turns once.
-Green's theorem (Section 3.2) turns the term `e′ · ė″` into the integral of `K` over the inside.
-Neither theorem is in Mathlib for general simple closed curves.
+The proof measures the turning of the tangent against an orthonormal frame `e′, e″`. By
+`5-GeodesicCurvature`, the tangent angle turns at the rate `θ̇ = κg + e′ · ė″`.
 
-A curvilinear polygon is a closed curve with corners. Each corner turns the tangent by an exterior
-angle, and these angles join the formula (Theorem 13.2.2).
+* *Hopf's Umlaufsatz.* Going once around a simple closed curve, the tangent turns through `2π`.
+  Along the arcs it turns by `∫ κg ds + ∮ e′ · de″`, and at the corners by `Σⱼ δⱼ`.
+* *The frame rotates by the total curvature.* Green's theorem turns `∮ e′ · de″` into the
+  integral over `R` of the *curl* `e′ᵤ · e″ᵥ - e′ᵥ · e″ᵤ`, and the curl is `K` times the area
+  element.
+
+Subtracting the second from the first leaves Gauss–Bonnet. Neither Hopf's Umlaufsatz nor Green's
+theorem for general regions is in Mathlib.
+
+Sides are curves in the plane, and arcs are their images on the surface. Side `j` ends where side
+`j + 1` begins, with indices taken mod `n`. Mathlib's `finRotate n j` is this next index.
 -/
 
-open scoped ContDiff Topology RealInnerProductSpace
+open scoped ContDiff Topology RealInnerProductSpace Real
 
-open Patch
-
-/-- `w` rotated anticlockwise by `π / 2` -/
-noncomputable def rotate (w : ℝ²) : ℝ² :=
-  !₂[-(w 1), w 0]
-
-/-- **Simple closed curves** (Pressley, Section 3.1). A smooth regular curve in the plane with
-period `T`, which returns to a point only after a whole number of periods. -/
-structure SimpleClosedCurve where
-  /-- `π(t)` -/
-  toFun : ℝ → ℝ²
-  /-- the period -/
-  T : ℝ
-  /-- `T > 0` -/
-  T_pos : 0 < T
-  /-- `π` is smooth -/
-  contDiff : ContDiff ℝ ∞ toFun
-  /-- `π(s) = π(s')` exactly when `s - s'` is a multiple of `T` -/
-  eq_iff : ∀ s s', toFun s = toFun s' ↔ ∃ k : ℤ, s - s' = k * T
-  /-- `π` is regular -/
-  deriv_ne_zero : ∀ s, deriv toFun s ≠ 0
-
-/-- **The inside of a closed curve.** The points off the curve whose region of the complement is
-bounded. The Jordan curve theorem, which is not in Mathlib, says that there is exactly one such
-region. -/
-def inside (π : ℝ → ℝ²) : Set ℝ² :=
-  {x | x ∉ Set.range π ∧ Bornology.IsBounded (connectedComponentIn (Set.range π)ᶜ x)}
-
-/-- **Positive orientation** (Pressley, Section 13.1). At each smooth point, turning the velocity
-anticlockwise by `π / 2` points inside. -/
-def IsPositivelyOriented (π : ℝ → ℝ²) : Prop :=
-  ∀ s, DifferentiableAt ℝ π s →
-    ∀ᶠ ε in 𝓝[>] (0 : ℝ), π s + ε • rotate (deriv π s) ∈ inside π
-
-/-- **Hopf's Umlaufsatz** (Pressley, Theorem 3.1.4). The tangent of a positively oriented simple
-closed curve turns through exactly `2π`, so its total signed curvature is `2π`. -/
-theorem hopf_umlaufsatz (π : SimpleClosedCurve) (oriented : IsPositivelyOriented π.toFun) :
-    ∫ s in (0)..π.T,
-        (deriv π.toFun s 0 * deriv (deriv π.toFun) s 1 -
-          deriv π.toFun s 1 * deriv (deriv π.toFun) s 0) / ‖deriv π.toFun s‖ ^ 2 =
-      2 * Real.pi :=
-  sorry
-
-/-- **Green's theorem** (Pressley, Section 3.2). Around a positively oriented simple closed curve,
-`∮ P du + Q dv = ∫∫_{int π} (Q_u - P_v) du dv`. -/
-theorem green (π : SimpleClosedCurve) (oriented : IsPositivelyOriented π.toFun)
-    {P Q : ℝ² → ℝ} {O : Set ℝ²} (hO : IsOpen O) (closure_sub : closure (inside π.toFun) ⊆ O)
-    (hP : ContDiffOn ℝ ∞ P O) (hQ : ContDiffOn ℝ ∞ Q O) :
-    ∫ s in (0)..π.T,
-        (P (π.toFun s) * deriv π.toFun s 0 + Q (π.toFun s) * deriv π.toFun s 1) =
-      ∫ x in inside π.toFun, (∂ᵤ Q x - ∂ᵥ P x) :=
-  sorry
-
-/-- **Gauss–Bonnet for a simple closed curve** (Pressley, Theorem 13.1.2). If `γ = σ ∘ π` is
-unit-speed, so that its period is its length, then `∫ κg ds = 2π - ∫∫_{int γ} K dA`. -/
-theorem gauss_bonnet_simpleClosedCurve {S : Set ℝ³} (σ : AllowablePatch S)
-    (π : SimpleClosedCurve) (oriented : IsPositivelyOriented π.toFun)
-    (closure_sub : closure (inside π.toFun) ⊆ σ.U)
-    (unit_speed : ∀ s, ‖deriv (σ.toFun ∘ π.toFun) s‖ = 1) :
-    ∫ s in (0)..π.T, geodesicCurvature σ.toFun π.toFun s =
-      2 * Real.pi - ∫ x in inside π.toFun, K σ.toFun x * areaElement σ.toFun x :=
-  sorry
-
-/-- **Curvilinear polygons** (Pressley, Definition 13.2.1). A closed curve with period `T` that is
-smooth except at the vertices `π(t₁), …, π(tₙ)`, where it has one-sided velocities that are not
-parallel. -/
+/-- **Curvilinear polygons** (Pressley, Definition 13.2.1). A simple closed curve in the plane
+made of `n` smooth sides, where side `j` runs from `cⱼ(0)` to `cⱼ(ℓⱼ)` and makes a genuine corner
+with the next side. -/
 structure CurvilinearPolygon where
-  /-- `π(t)` -/
-  toFun : ℝ → ℝ²
-  /-- the period -/
-  T : ℝ
-  /-- the number of edges -/
-  n : ℕ
-  /-- the times `0 = t₀ < t₁ < ⋯ < tₙ = T` -/
-  t : Fin (n + 1) → ℝ
-  /-- `π` is continuous -/
-  continuous : Continuous toFun
-  /-- `π(s) = π(s')` exactly when `s - s'` is a multiple of `T` -/
-  eq_iff : ∀ s s', toFun s = toFun s' ↔ ∃ k : ℤ, s - s' = k * T
-  /-- `t₀ < t₁ < ⋯ < tₙ` -/
-  strictMono : StrictMono t
-  /-- `t₀ = 0` -/
-  t_zero : t 0 = 0
-  /-- `tₙ = T` -/
-  t_last : t (Fin.last n) = T
-  /-- `π` is smooth on each edge -/
-  contDiffOn : ∀ j : Fin n, ContDiffOn ℝ ∞ toFun (Set.Ioo (t j.castSucc) (t j.succ))
-  /-- the velocity arriving at the vertex `π(t_{j+1})` -/
-  inDeriv : Fin n → ℝ²
-  /-- the velocity leaving the vertex `π(t_{j+1})` -/
-  outDeriv : Fin n → ℝ²
-  /-- `π̇⁻(t_{j+1})` is the velocity arriving at the vertex -/
-  hasDerivWithinAt_in : ∀ j, HasDerivWithinAt toFun (inDeriv j) (Set.Iio (t j.succ)) (t j.succ)
-  /-- `π̇⁺(t_{j+1})` is the velocity leaving the vertex -/
-  hasDerivWithinAt_out : ∀ j, HasDerivWithinAt toFun (outDeriv j) (Set.Ioi (t j.succ)) (t j.succ)
-  /-- the two velocities at a vertex are not parallel -/
-  not_parallel : ∀ j, LinearIndependent ℝ ![inDeriv j, outDeriv j]
+  /-- the number of sides -/
+  numSides : ℕ
+  /-- the sides `cⱼ` -/
+  side : Fin numSides → ℝ → ℝ²
+  /-- the lengths `ℓⱼ` of the parameter intervals `[0, ℓⱼ]` -/
+  sideLength : Fin numSides → ℝ
+  /-- `ℓⱼ > 0` -/
+  sideLength_pos : ∀ j, 0 < sideLength j
+  /-- each side is smooth -/
+  smooth : ∀ j, ContDiff ℝ ∞ (side j)
+  /-- each side ends where the next begins -/
+  closes : ∀ j, side j (sideLength j) = side (finRotate numSides j) 0
+  /-- each point of the polygon is reached exactly once, counting each corner as the start of the
+  side that leaves it -/
+  simple : ∀ j k, ∀ s ∈ Set.Ico 0 (sideLength j), ∀ s' ∈ Set.Ico 0 (sideLength k),
+    side j s = side k s' → j = k ∧ s = s'
+  /-- at each corner, the arriving and leaving velocities are not parallel -/
+  corner : ∀ j,
+    LinearIndependent ℝ ![deriv (side j) (sideLength j), deriv (side (finRotate numSides j)) 0]
 
-/-- **The exterior angle at a vertex** (Pressley, Section 13.2). The signed angle on the surface
-from the arriving velocity to the leaving velocity, positive when it turns anticlockwise about the
-normal. -/
-noncomputable def CurvilinearPolygon.exteriorAngle (σ : ℝ² → ℝ³) (P : CurvilinearPolygon)
-    (j : Fin P.n) : ℝ :=
-  let q := P.toFun (P.t j.succ)
-  let a := fderiv ℝ σ q (P.inDeriv j)
-  let b := fderiv ℝ σ q (P.outDeriv j)
-  Real.sign ⟪normal σ q, cross a b⟫ * InnerProductGeometry.angle a b
+namespace CurvilinearPolygon
 
-/-- **Gauss–Bonnet for a curvilinear polygon** (Pressley, Theorem 13.2.2). With interior angles
-`αⱼ = π - εⱼ`, `∫ κg ds = Σ αⱼ - (n - 2)π - ∫∫_{int γ} K dA`. -/
-theorem gauss_bonnet_curvilinearPolygon {S : Set ℝ³} (σ : AllowablePatch S)
-    (P : CurvilinearPolygon) (oriented : IsPositivelyOriented P.toFun)
-    (closure_sub : closure (inside P.toFun) ⊆ σ.U)
-    (unit_speed : ∀ j : Fin P.n, ∀ s ∈ Set.Ioo (P.t j.castSucc) (P.t j.succ),
-      ‖deriv (σ.toFun ∘ P.toFun) s‖ = 1) :
-    ∫ s in (0)..P.T, geodesicCurvature σ.toFun P.toFun s =
-      ∑ j, (Real.pi - P.exteriorAngle σ.toFun j) - (P.n - 2) * Real.pi -
-        ∫ x in inside P.toFun, K σ.toFun x * areaElement σ.toFun x :=
+variable (P : CurvilinearPolygon)
+
+/-- The points of the polygon -/
+def trace : Set ℝ² :=
+  ⋃ j, P.side j '' Set.Icc 0 (P.sideLength j)
+
+/-- **The inside** `R`. The points off the polygon whose region of the complement is bounded. The
+Jordan curve theorem, which is not in Mathlib, says that there is exactly one such region. -/
+def inside : Set ℝ² :=
+  {x | x ∉ P.trace ∧ Bornology.IsBounded (connectedComponentIn P.traceᶜ x)}
+
+/-- **Positive orientation.** Along each side, the velocity `(a, b)` turned anticlockwise by
+`π / 2`, which is `(-b, a)`, points inside. -/
+def IsPositivelyOriented : Prop :=
+  ∀ j, ∀ s ∈ Set.Ioo 0 (P.sideLength j),
+    let v := deriv (P.side j) s
+    ∀ᶠ ε in 𝓝[>] (0 : ℝ), P.side j s + ε • !₂[-v 1, v 0] ∈ P.inside
+
+/-- **The line integral** `∮ f du + g dv` around the polygon -/
+noncomputable def lineIntegral (f g : ℝ² → ℝ) : ℝ :=
+  ∑ j, ∫ s in (0)..P.sideLength j,
+    let c := P.side j
+    f (c s) * deriv c s 0 + g (c s) * deriv c s 1
+
+/-- **Green's theorem** (Pressley, Section 3.2). `∮ f du + g dv = ∫∫_R (gᵤ - fᵥ) du dv` around a
+positively oriented polygon. -/
+theorem lineIntegral_eq_integral (oriented : P.IsPositivelyOriented) {f g : ℝ² → ℝ} {O : Set ℝ²}
+    (open_O : IsOpen O) (subset_O : closure P.inside ⊆ O)
+    (smooth_f : ContDiffOn ℝ ∞ f O) (smooth_g : ContDiffOn ℝ ∞ g O) :
+    P.lineIntegral f g = ∫ x in P.inside, (∂ᵤ g x - ∂ᵥ f x) :=
   sorry
+
+end CurvilinearPolygon
+
+namespace SurfacePatch
+
+variable {S : Set ℝ³} (σ : SurfacePatch S)
+
+/-- **Curvilinear polygons on a patch** (Pressley, Section 13.2). A positively oriented curvilinear
+polygon lying, together with its inside, in `U`. -/
+structure Polygon extends CurvilinearPolygon where
+  /-- the polygon is positively oriented -/
+  positivelyOriented : toCurvilinearPolygon.IsPositivelyOriented
+  /-- the polygon and its inside lie in `U` -/
+  closure_inside_subset : closure toCurvilinearPolygon.inside ⊆ σ.U
+
+namespace Polygon
+
+variable {σ} (P : σ.Polygon)
+
+/-- The arc `γⱼ = σ ∘ cⱼ` on the surface traced by side `j` -/
+def arc (j : Fin P.numSides) : ℝ → ℝ³ :=
+  σ ∘ P.side j
+
+/-- **Unit speed.** Every arc has `‖γ̇ⱼ‖ = 1`, so `ℓⱼ` is its length. -/
+def IsUnitSpeed : Prop :=
+  ∀ j, ∀ s ∈ Set.Icc 0 (P.sideLength j), ‖deriv (P.arc j) s‖ = 1
+
+/-- **Total geodesic curvature** `Σⱼ ∫ κg ds` of the arcs -/
+noncomputable def totalGeodesicCurvature : ℝ :=
+  ∑ j, ∫ s in (0)..P.sideLength j, σ.geodesicCurvature (P.side j) s
+
+/-- **Total curvature** `∫∫_R K dA` of the region inside -/
+noncomputable def totalCurvature : ℝ :=
+  ∫ x in P.inside, σ.K x * σ.areaElement x
+
+/-- **The exterior angle** `δⱼ` at the corner where arc `j` ends, the oriented angle from the
+arriving velocity to the leaving velocity -/
+noncomputable def exteriorAngle (j : Fin P.numSides) : ℝ :=
+  let arriving := deriv (P.arc j) (P.sideLength j)
+  let leaving := deriv (P.arc (finRotate P.numSides j)) 0
+  σ.orientedAngle (P.side j (P.sideLength j)) arriving leaving
+
+end Polygon
+
+namespace OrthonormalFrame
+
+variable {σ} (frame : σ.OrthonormalFrame)
+
+/-- **The curl of the frame** `e′ᵤ · e″ᵥ - e′ᵥ · e″ᵤ` -/
+noncomputable def curl (q : ℝ²) : ℝ :=
+  ⟪∂ᵤ frame.e' q, ∂ᵥ frame.e'' q⟫ - ⟪∂ᵥ frame.e' q, ∂ᵤ frame.e'' q⟫
+
+/-- **The curl of the frame is the curvature** (Pressley, Lemma 13.1.3).
+`e′ᵤ · e″ᵥ - e′ᵥ · e″ᵤ = K ‖σᵤ × σᵥ‖`. -/
+theorem curl_eq_K_mul_areaElement {q : ℝ²} (q_in_U : q ∈ σ.U) :
+    frame.curl q = σ.K q * σ.areaElement q :=
+  sorry
+
+/-- **The rotation of the frame** `∮ e′ · de″` around a polygon -/
+noncomputable def rotationAround (P : σ.Polygon) : ℝ :=
+  ∑ j, ∫ s in (0)..P.sideLength j,
+    let c := P.side j
+    ⟪frame.e' (c s), deriv (frame.e'' ∘ c) s⟫
+
+/-- **The frame rotates by the total curvature.** By the chain rule `∮ e′ · de″` is the line
+integral of `e′ · e″ᵤ du + e′ · e″ᵥ dv`, Green's theorem turns it into the integral of the curl,
+and the curl is `K dA`. -/
+theorem rotationAround_eq_totalCurvature (P : σ.Polygon) :
+    frame.rotationAround P = P.totalCurvature :=
+  sorry
+
+end OrthonormalFrame
+
+variable {σ}
+
+/-- **Hopf's Umlaufsatz** (Pressley, Theorem 3.1.4 and Equation 13.12). Going once around the
+polygon, the tangent turns through `2π`. Measured against the frame, it turns by
+`∫ κg ds + ∮ e′ · de″` along the arcs and by `δⱼ` at each corner. -/
+theorem Polygon.hopf_umlaufsatz {P : σ.Polygon} (unit_speed : P.IsUnitSpeed)
+    (frame : σ.OrthonormalFrame) :
+    P.totalGeodesicCurvature + frame.rotationAround P + ∑ j, P.exteriorAngle j = 2 * π :=
+  sorry
+
+/-- **Local Gauss–Bonnet** (Pressley, Theorem 13.2.2; do Carmo, Section 4-5).
+`Σⱼ ∫ κg ds + ∫∫_R K dA + Σⱼ δⱼ = 2π`. -/
+theorem Polygon.gauss_bonnet {P : σ.Polygon} (unit_speed : P.IsUnitSpeed) :
+    P.totalGeodesicCurvature + P.totalCurvature + ∑ j, P.exteriorAngle j = 2 * π := by
+  obtain ⟨frame⟩ := σ.nonempty_orthonormalFrame
+  have turning := P.hopf_umlaufsatz unit_speed frame
+  have rotation := frame.rotationAround_eq_totalCurvature P
+  linarith
+
+end SurfacePatch
