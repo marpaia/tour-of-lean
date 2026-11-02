@@ -1,9 +1,11 @@
-import Surfaces.«1-TangentPlane» /- SurfacePatch, tangentPlane -/
-import Surfaces.Notation /- σᵤ, σᵥ, cross -/
-import Mathlib.Analysis.InnerProductSpace.Defs /- ⟪x, y⟫ -/
-import Mathlib.Basic.Real.Sign /- Real.sign -/
-import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic /- InnerProductGeometry.angle -/
-import Mathlib.Topology.ContinuousOn /- ContinuousOn -/
+module
+
+public import Surfaces.«1-TangentPlane» /- SurfacePatch, tangentPlane -/
+public import Surfaces.Notation /- σᵤ, σᵥ, cross -/
+public import Mathlib.Analysis.InnerProductSpace.Defs /- ⟪x, y⟫ -/
+public import Mathlib.Basic.Real.Sign /- Real.sign -/
+public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic /- InnerProductGeometry.angle -/
+public import Mathlib.Topology.ContinuousOn /- ContinuousOn -/
 
 /-!
 # 2. Orientation
@@ -25,6 +27,8 @@ point, with patches agreeing with it around every point (Pressley, Section 4.5).
 surface is orientable (Corollary 5.4.5). Global Gauss–Bonnet needs this, so that the patches of a
 triangulation turn the same way where they meet.
 -/
+
+@[expose] public section
 
 open scoped RealInnerProductSpace
 

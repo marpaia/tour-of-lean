@@ -1,18 +1,20 @@
-import Surfaces.«5-GeodesicCurvature» /- geodesicCurvature, OrthonormalFrame, K, areaElement -/
-import Surfaces.«2-Orientation» /- orientedAngle -/
-import Surfaces.Notation /- ℝ², ℝ³, ∂ᵤ, ∂ᵥ, cross -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs /- ∑ -/
-import Mathlib.Analysis.Normed.Lp.MeasurableSpace /- MeasurableSpace ℝ² -/
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic /- π -/
-import Mathlib.LinearAlgebra.LinearIndependent.Defs /- LinearIndependent -/
-import Mathlib.Logic.Equiv.Fin.Rotate /- finRotate -/
-import Mathlib.MeasureTheory.Integral.Bochner.Basic /- ∫ x in R, f x -/
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic /- ∫ s in a..b, f s -/
-import Mathlib.MeasureTheory.Measure.Haar.OfBasis /- volume on ℝ² -/
-import Mathlib.Tactic.Linarith.Frontend /- linarith -/
-import Mathlib.Topology.Bornology.Basic /- Bornology.IsBounded -/
-import Mathlib.Topology.Connected.Basic /- connectedComponentIn -/
-import Mathlib.Topology.Defs.Filter /- 𝓝[>] -/
+module
+
+public import Surfaces.«5-GeodesicCurvature» /- geodesicCurvature, OrthonormalFrame, K, areaElement -/
+public import Surfaces.«2-Orientation» /- orientedAngle -/
+public import Surfaces.Notation /- ℝ², ℝ³, ∂ᵤ, ∂ᵥ, cross -/
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs /- ∑ -/
+public import Mathlib.Analysis.Normed.Lp.MeasurableSpace /- MeasurableSpace ℝ² -/
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic /- π -/
+public import Mathlib.LinearAlgebra.LinearIndependent.Defs /- LinearIndependent -/
+public import Mathlib.Logic.Equiv.Fin.Rotate /- finRotate -/
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic /- ∫ x in R, f x -/
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic /- ∫ s in a..b, f s -/
+public import Mathlib.MeasureTheory.Measure.Haar.OfBasis /- volume on ℝ² -/
+public import Mathlib.Tactic.Linarith.Frontend /- linarith -/
+public import Mathlib.Topology.Bornology.Basic /- Bornology.IsBounded -/
+public import Mathlib.Topology.Connected.Basic /- connectedComponentIn -/
+public import Mathlib.Topology.Defs.Filter /- 𝓝[>] -/
 
 /-!
 # 6. Local Gauss–Bonnet
@@ -39,6 +41,8 @@ theorem for general regions is in Mathlib.
 Sides are curves in the plane, and arcs are their images on the surface. Side `j` ends where side
 `j + 1` begins, with indices taken mod `n`. Mathlib's `finRotate n j` is this next index.
 -/
+
+@[expose] public section
 
 open scoped ContDiff Topology RealInnerProductSpace Real
 

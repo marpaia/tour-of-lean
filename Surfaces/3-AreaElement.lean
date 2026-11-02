@@ -1,7 +1,9 @@
-import Surfaces.«2-Orientation» /- SurfacePatch, tangentPlane, normal -/
-import Surfaces.Notation /- σᵤ, σᵥ, cross -/
-import Mathlib.Analysis.InnerProductSpace.Defs /- ⟪x, y⟫ -/
-import Mathlib.Analysis.Real.Sqrt /- √ -/
+module
+
+public import Surfaces.«2-Orientation» /- SurfacePatch, tangentPlane, normal -/
+public import Surfaces.Notation /- σᵤ, σᵥ, cross -/
+public import Mathlib.Analysis.InnerProductSpace.Defs /- ⟪x, y⟫ -/
+public import Mathlib.Analysis.Real.Sqrt /- √ -/
 
 /-!
 # 3. The area element
@@ -37,6 +39,8 @@ and its integrand is continuous there, so it is integrable.
 Each quantity belongs to a patch `σ` and is written with dot notation, as in `σ.E q` or
 `σ.areaElement q`.
 -/
+
+@[expose] public section
 
 open scoped RealInnerProductSpace
 

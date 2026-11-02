@@ -1,7 +1,9 @@
-import Surfaces.«3-AreaElement» /- E, F, G -/
-import Surfaces.«2-Orientation» /- normal -/
-import Surfaces.Notation /- σᵤ, σᵥ, σᵤᵤ, σᵤᵥ, σᵥᵥ, ∂ᵤ, ∂ᵥ -/
-import Mathlib.Analysis.InnerProductSpace.Defs /- ⟪x, y⟫ -/
+module
+
+public import Surfaces.«3-AreaElement» /- E, F, G -/
+public import Surfaces.«2-Orientation» /- normal -/
+public import Surfaces.Notation /- σᵤ, σᵥ, σᵤᵤ, σᵤᵥ, σᵥᵥ, ∂ᵤ, ∂ᵥ -/
+public import Mathlib.Analysis.InnerProductSpace.Defs /- ⟪x, y⟫ -/
 
 /-!
 # 4. Gaussian curvature
@@ -19,6 +21,8 @@ fundamental forms (Corollary 8.1.3). We take that formula as the definition,
 
 the determinant of the second fundamental form divided by the determinant of the first.
 -/
+
+@[expose] public section
 
 open scoped RealInnerProductSpace
 

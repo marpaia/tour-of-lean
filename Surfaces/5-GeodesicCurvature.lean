@@ -1,13 +1,15 @@
-import Surfaces.«4-GaussianCurvature» /- SurfacePatch -/
-import Surfaces.Notation /- ℝ², ℝ³, cross -/
-import Surfaces.«1-TangentPlane» /- tangentPlane -/
-import Surfaces.«2-Orientation» /- normal -/
-import Mathlib.Analysis.Calculus.ContDiff.Defs /- ContDiff, ContDiffOn -/
-import Mathlib.Analysis.Calculus.Deriv.Basic /- deriv -/
-import Mathlib.Analysis.Complex.Trigonometric /- Real.cos, Real.sin -/
-import Mathlib.Analysis.InnerProductSpace.Defs /- ⟪x, y⟫ -/
-import Mathlib.Analysis.InnerProductSpace.Orthonormal /- Orthonormal -/
-import Mathlib.Order.Interval.Set.Defs /- Set.Icc -/
+module
+
+public import Surfaces.«4-GaussianCurvature» /- SurfacePatch -/
+public import Surfaces.Notation /- ℝ², ℝ³, cross -/
+public import Surfaces.«1-TangentPlane» /- tangentPlane -/
+public import Surfaces.«2-Orientation» /- normal -/
+public import Mathlib.Analysis.Calculus.ContDiff.Defs /- ContDiff, ContDiffOn -/
+public import Mathlib.Analysis.Calculus.Deriv.Basic /- deriv -/
+public import Mathlib.Analysis.Complex.Trigonometric /- Real.cos, Real.sin -/
+public import Mathlib.Analysis.InnerProductSpace.Defs /- ⟪x, y⟫ -/
+public import Mathlib.Analysis.InnerProductSpace.Orthonormal /- Orthonormal -/
+public import Mathlib.Order.Interval.Set.Defs /- Set.Icc -/
 
 /-!
 # 5. Geodesic curvature
@@ -26,6 +28,8 @@ To measure how `γ̇` turns, compare it with an *orthonormal frame*, two perpend
 `θ̇ = κg + e′ · ė″` (Equation 13.4). The tangent turns by `κg` relative to the surface, and the
 frame itself turns by `e′ · ė″`.
 -/
+
+@[expose] public section
 
 open scoped ContDiff RealInnerProductSpace
 

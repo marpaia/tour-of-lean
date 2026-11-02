@@ -1,10 +1,12 @@
-import Surfaces.Notation /- ℝ², ℝ³ -/
-import Mathlib.Analysis.Calculus.ContDiff.Defs /- ContDiffOn, ∞ -/
-import Mathlib.Analysis.Calculus.FDeriv.Defs /- fderiv -/
-import Mathlib.Data.Set.Function /- Function.invFunOn -/
-import Mathlib.Data.Set.Operations /- Set.InjOn -/
-import Mathlib.Topology.Defs.Basic /- IsOpen -/
-import Mathlib.Topology.Defs.Filter /- ContinuousOn -/
+module
+
+public import Surfaces.Notation /- ℝ², ℝ³ -/
+public import Mathlib.Analysis.Calculus.ContDiff.Defs /- ContDiffOn, ∞ -/
+public import Mathlib.Analysis.Calculus.FDeriv.Defs /- fderiv -/
+public import Mathlib.Data.Set.Function /- Function.invFunOn -/
+public import Mathlib.Data.Set.Operations /- Set.InjOn -/
+public import Mathlib.Topology.Defs.Basic /- IsOpen -/
+public import Mathlib.Topology.Defs.Filter /- ContinuousOn -/
 
 /-!
 # 0. Smooth surfaces
@@ -28,6 +30,8 @@ Definition 4.1.1), and parts 7 and 8 add calculus. Part 8 is do Carmo's regulari
 linearly independent (Definition 4.2.1), and Pressley calls a patch satisfying all of these
 *allowable* (Definition 4.2.2).
 -/
+
+@[expose] public section
 
 open scoped ContDiff
 

@@ -1,10 +1,12 @@
-import Surfaces.«6-LocalGaussBonnet» /- SurfacePatch.Polygon, Polygon.totalCurvature -/
-import Surfaces.Notation /- ℝ³ -/
-import Surfaces.«2-Orientation» /- IsOrientedBy -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs /- ∑ -/
-import Mathlib.Data.Set.Card /- Set.ncard -/
-import Mathlib.Order.Interval.Set.Defs /- Set.Icc -/
-import Mathlib.Topology.Defs.Basic /- closure -/
+module
+
+public import Surfaces.«6-LocalGaussBonnet» /- SurfacePatch.Polygon, Polygon.totalCurvature -/
+public import Surfaces.Notation /- ℝ³ -/
+public import Surfaces.«2-Orientation» /- IsOrientedBy -/
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs /- ∑ -/
+public import Mathlib.Data.Set.Card /- Set.ncard -/
+public import Mathlib.Order.Interval.Set.Defs /- Set.Icc -/
+public import Mathlib.Topology.Defs.Basic /- closure -/
 
 /-!
 # 7. Global Gauss–Bonnet
@@ -21,6 +23,8 @@ with the `2π` from each face into `2π χ`. What remains is the Gauss–Bonnet 
 
   `∫∫_S K dA = 2π χ`.
 -/
+
+@[expose] public section
 
 open scoped Real
 

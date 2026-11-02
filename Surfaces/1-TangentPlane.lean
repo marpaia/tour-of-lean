@@ -1,8 +1,10 @@
-import Surfaces.«0-Definition» /- SurfacePatch -/
-import Surfaces.Notation /- σᵤ, σᵥ -/
-import Mathlib.Analysis.Calculus.TangentCone.Defs /- tangentConeAt -/
-import Mathlib.LinearAlgebra.Dimension.Finrank /- Module.finrank -/
-import Mathlib.LinearAlgebra.Span.Defs /- Submodule.span -/
+module
+
+public import Surfaces.«0-Definition» /- SurfacePatch -/
+public import Surfaces.Notation /- σᵤ, σᵥ -/
+public import Mathlib.Analysis.Calculus.TangentCone.Defs /- tangentConeAt -/
+public import Mathlib.LinearAlgebra.Dimension.Finrank /- Module.finrank -/
+public import Mathlib.LinearAlgebra.Span.Defs /- Submodule.span -/
 
 /-!
 # 1. The tangent plane
@@ -17,6 +19,8 @@ a combination of them (Pressley, Proposition 4.4.2). We define the *tangent plan
 their span, and state that it is exactly Mathlib's tangent cone, so that it depends only on the
 surface. By Part 8, `σᵤ` and `σᵥ` are linearly independent, so the tangent plane is indeed a plane.
 -/
+
+@[expose] public section
 
 namespace SurfacePatch
 

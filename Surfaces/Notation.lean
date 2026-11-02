@@ -1,7 +1,9 @@
-import Mathlib.Analysis.Calculus.LineDeriv.Basic /- lineDeriv -/
-import Mathlib.Analysis.InnerProductSpace.PiL2 /- EuclideanSpace, EuclideanSpace.single -/
-import Mathlib.Analysis.Normed.Lp.WithLp /- WithLp.toLp -/
-import Mathlib.LinearAlgebra.CrossProduct /- crossProduct -/
+module
+
+public import Mathlib.Analysis.Calculus.LineDeriv.Basic /- lineDeriv -/
+public import Mathlib.Analysis.InnerProductSpace.PiL2 /- EuclideanSpace, EuclideanSpace.single -/
+public import Mathlib.Analysis.Normed.Lp.WithLp /- WithLp.toLp -/
+public import Mathlib.LinearAlgebra.CrossProduct /- crossProduct -/
 
 /-!
 # Notation
@@ -14,6 +16,8 @@ The notation used throughout the library, so that statements read as they do on 
 * `σᵤ`, `σᵥ`, `σᵤᵤ`, `σᵤᵥ`, and `σᵥᵥ`, the partial derivatives of a patch `σ`
 * `cross a b`, the cross product `a × b` in `ℝ³`
 -/
+
+@[expose] public section
 
 /-- `ℝ²`, the plane of parameters `(u, v)`. Mathlib calls it `EuclideanSpace ℝ (Fin 2)`. Its
 points are functions from `Fin 2 = {0, 1}` to `ℝ`, and `‖·‖` is the Euclidean norm. -/
@@ -72,14 +76,14 @@ notation "σᵥᵥ" => ∂ᵥ (∂ᵥ σ)
 
 open Lean PrettyPrinter in
 /-- Prints `∂ᵤ ↑σ` as `σᵤ` and `∂ᵤ σᵤ` as `σᵤᵤ` -/
-@[app_unexpander partialU] def unexpandPartialU : Unexpander
+@[app_unexpander partialU] meta def unexpandPartialU : Unexpander
   | `($_ ↑$f:ident) => if f.getId == `σ then `(σᵤ) else throw ()
   | `($_ σᵤ) => `(σᵤᵤ)
   | _ => throw ()
 
 open Lean PrettyPrinter in
 /-- Prints `∂ᵥ ↑σ` as `σᵥ`, `∂ᵥ σᵤ` as `σᵤᵥ`, and `∂ᵥ σᵥ` as `σᵥᵥ` -/
-@[app_unexpander partialV] def unexpandPartialV : Unexpander
+@[app_unexpander partialV] meta def unexpandPartialV : Unexpander
   | `($_ ↑$f:ident) => if f.getId == `σ then `(σᵥ) else throw ()
   | `($_ σᵤ) => `(σᵤᵥ)
   | `($_ σᵥ) => `(σᵥᵥ)
