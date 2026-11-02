@@ -35,7 +35,9 @@ linearly independent (Definition 4.2.1), and Pressley calls a patch satisfying a
 
 open scoped ContDiff
 
-/-- **Surface patches.** A map `σ : U → S ∩ W` satisfying parts 1, 2, and 4 to 8. -/
+/-- **Surface patches.** A one-to-one smooth map `σ` from an open set `U ⊆ ℝ²` onto the piece
+`S ∩ W` of `S` cut out by an open set `W ⊆ ℝ³`, with a continuous inverse and a one-to-one
+derivative at every point of `U`. -/
 structure SurfacePatch (S : Set ℝ³) where
   /-- `σ(u, v)` -/
   toFun : ℝ² → ℝ³
